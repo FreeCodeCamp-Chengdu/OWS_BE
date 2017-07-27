@@ -1,12 +1,15 @@
 'use strict';
 
-const  Path = require('path'),  FS = require('fs'),  Module_Type = ['.js', '.json'];
+const  Path = require('path'),  FS = require('fs'),
+       Module_Type = ['.js', '.json', ''];
 
 
 
 module.exports = function (module, forEach) {
 
-    const  Module_root = Path.dirname( module.filename ),  sub = [ ];
+    const Module_root = (typeof module === 'string')  ?
+              Path.join(process.cwd(), module)  :  Path.dirname( module.filename ),
+          sub = [ ];
 
     forEach = (typeof forEach === 'function')  &&  forEach;
 

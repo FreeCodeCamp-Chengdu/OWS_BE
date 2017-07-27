@@ -1,16 +1,16 @@
 'use strict';
 
-const  bodyParser = require('body-parser'),  Passport = require('passport'),
-       LC = require('leanengine');
-
-// 加载云函数定义，你可以将云函数拆分到多个文件方便管理，但需要在主文件中加载它们
-require('./RPC');
+const FS = require('fs'),
+      bodyParser = require('body-parser'),
+      Passport = require('passport'),
+      LC = require('leanengine'),
+      subModule = require('./utility/subModule');
 
 
 
 /* ---------- Express 中间件 ---------- */
 
-var app = require('express')();
+const app = require('express')();
 
 //  LeanCloud 云引擎中间件
 
@@ -61,8 +61,19 @@ app.get('/', function(request, response) {
 });
 
 
-app.use( require('./REST/auth') );
+subModule('REST',  function (router, info) {
 
+    if ( FS.statSync(`REST/${info.base}`).isDirectory() )
+        app.use( router );
+    else
+        app.use(`/${info.name}`, router);
+});
+
+
+subModule('RPC',  function (func, info) {
+
+    LC.Cloud.define(info.name,  func.bind( LC ));
+});
 
 
 /* ---------- 异常处理 ---------- */
@@ -87,16 +98,16 @@ app.use(function(error, request, response) {
     if (request.timedout  &&  (request.headers.upgrade === 'websocket'))
         return;
 
-    var statusCode = error.status || 500;
+    error.status = error.status || 500;
 
-    if (statusCode === 500)  console.error(error.stack || error);
+    if (error.status === 500)  console.error(error.stack || error);
 
     if ( request.timedout )
         console.error(
             `请求超时: url=${request.originalUrl}, timeout=${error.timeout}, 请确认方法执行耗时很长，或没有正确的 response 回调。`
         );
 
-    response.status( statusCode );
+    response.status( error.status );
 
     //  若非开发环境，须隐藏 异常堆栈信息
     error = Object.assign({ }, error);

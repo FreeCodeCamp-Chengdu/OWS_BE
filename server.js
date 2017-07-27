@@ -29,6 +29,6 @@ process.on('uncaughtException', function(error) {
 }).on('unhandledRejection', function(reason, promise) {
 
     console.error(
-        `Unhandled Rejection at: Promise ${p}, reason: ${reason.stack}`
+        `Unhandled Rejection at: Promise ${promise}, reason: ${reason.stack}`
     );
 });

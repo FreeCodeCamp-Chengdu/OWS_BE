@@ -2,8 +2,7 @@
 
 const  Passport = require('passport'),  LC = require('leanengine');
 
-const  GitHub = require('passport-github2').Strategy,
-       router = require('express').Router();
+const  GitHub = require('passport-github2'),  router = require('express').Router();
 
 
 

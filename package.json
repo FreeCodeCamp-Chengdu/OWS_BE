@@ -1,6 +1,6 @@
 {
   "name": "fcc-cdg-ows",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "private": true,
   "description": "The offical Web site of FreeCodeCamp Chengdu Group",
   "main": "server.js",

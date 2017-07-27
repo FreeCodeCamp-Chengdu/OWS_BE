@@ -39,3 +39,8 @@
 ### 用户认证
 
  - GET `/auth/github`
+
+
+### GitHub API
+
+ - GET / POST / PUT / DELETE `/github/{path/of/api}`
