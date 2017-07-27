@@ -1,36 +1,71 @@
 'use strict';
 
-const  bodyParser = require('body-parser'),  AV = require('leanengine');
+const  bodyParser = require('body-parser'),  Passport = require('passport'),
+       LC = require('leanengine');
 
 // 加载云函数定义，你可以将云函数拆分到多个文件方便管理，但需要在主文件中加载它们
 require('./RPC');
 
 
+
+/* ---------- Express 中间件 ---------- */
+
 var app = require('express')();
 
-// 设置默认超时时间
+//  LeanCloud 云引擎中间件
+
 app.use( require('connect-timeout')('15s') );
 
-// 加载云引擎中间件
-app.use( AV.express() );
+app.use( LC.express() );
 
 app.enable('trust proxy');
 
-app.use( AV.Cloud.HttpsRedirect() );
+app.use( LC.Cloud.HttpsRedirect() );
+
+//  HTTP 基础中间件
+
+app.use( require('cookie-parser')() );
 
 app.use( bodyParser.json() );
 
 app.use( bodyParser.urlencoded({ extended: false }) );
 
-app.use( require('cookie-parser')() );
+//  Session / Passport 中间件
+
+app.use(require('express-session')({
+    secret:               process.env.GITHUB_APP_SECRET,
+    resave:               false,
+    saveUninitialized:    false
+}));
+
+app.use( Passport.initialize() );
+
+app.use( Passport.session() );
+
+Passport.serializeUser(function (user, done) {
+
+    done(null, user);
+});
+
+Passport.deserializeUser(function (user, done) {
+
+    done(null, user);
+});
 
 
+/* ---------- RESTful API 路由 ---------- */
 
 app.get('/', function(request, response) {
 
     response.send('Hello, Express & LeanCloud !');
 });
 
+
+app.use( require('./REST/auth') );
+
+
+
+/* ---------- 异常处理 ---------- */
 
 app.use(function(request, response, next) {
 
@@ -46,7 +81,6 @@ app.use(function(request, response, next) {
 });
 
 
-//  异常处理
 app.use(function(error, request, response) {
 
     // 忽略 websocket 的超时
