@@ -1,46 +1,13 @@
-# FreeCodeCamp 成都社区 官方网站
+# freeCodeCamp 成都社区 官网后端
 
-
+[![NPM Dependency](https://david-dm.org/FreeCodeCamp-Chengdu/OWS_BE.svg)](https://david-dm.org/FreeCodeCamp-Chengdu/OWS_BE)
 
 ## 【技术架构】
 
- - 开发模式： **前后端分离**
+-   开发模式： **前后端分离**
 
- - 后端技术栈：
+-   后端技术栈：
 
-   - [Express.JS](https://expressjs.com/zh-cn/)
+    -   [Koa](http://koa.bootcss.com/)
 
-   - [Passport.JS](http://passportjs.org/)
-
-   - [LeanCloud](https://leancloud.cn/)
-
-
-
-## 【云函数】
-
-
-### GitHub API
-
-【函数名】`github`
-
-【参数】
-```JSON
-{
-    "URI":    "users/your_name"
-}
-```
-【文档】https://developer.github.com/v3/
-
-
-
-## 【RESTful API】
-
-
-### 用户认证
-
- - GET `/auth/github`
-
-
-### GitHub API
-
- - GET / POST / PUT / DELETE `/github/{path/of/api}`
+    -   [LeanCloud](https://leancloud.cn/)
