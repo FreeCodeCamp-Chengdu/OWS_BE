@@ -1,11 +1,10 @@
-'use strict';
-
 // https://github.com/login/oauth/authorize?client_id=97d7a746d8d76c34e5d8&scope=user,repo
 
-const { URLSearchParams } = require('url'),
-    fetch = require('node-fetch');
+import { URLSearchParams } from 'url';
 
-exports.OAuth = (onDone, onError) => {
+import fetch from 'node-fetch';
+
+export function OAuth(onDone, onError) {
     onError = onError instanceof Function && onError;
 
     async function handleError(context, body) {
@@ -51,4 +50,4 @@ exports.OAuth = (onDone, onError) => {
         if (response.status > 299) await handleError(context, body);
         else await onDone(context, body);
     };
-};
+}

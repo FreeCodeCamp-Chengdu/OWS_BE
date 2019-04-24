@@ -1,13 +1,18 @@
-'use strict';
+import Koa from 'koa';
 
-const Koa = require('koa'),
-    mount = require('koa-mount'),
-    CSRF = require('koa-csrf'),
-    bodyParser = require('koa-bodyparser'),
-    LC = require('leanengine');
+import mount from 'koa-mount';
 
-const app = require('./app'),
-    server = new Koa(),
+import CORS from '@koa/cors';
+
+import bodyParser from 'koa-bodyparser';
+
+//import CSRF from 'koa-csrf';
+
+import LC from 'leanengine';
+
+import { app } from './app';
+
+const server = new Koa(),
     {
         LEANCLOUD_APP_ID,
         LEANCLOUD_APP_KEY,
@@ -21,31 +26,27 @@ LC.init({
     masterKey: LEANCLOUD_APP_MASTER_KEY
 });
 
-server.use(async (context, next) => {
-    try {
-        await next();
-    } catch (error) {
-        console.error(error);
+server
+    .use(async (context, next) => {
+        try {
+            await next();
+        } catch (error) {
+            console.error(error);
 
-        context.body = error.message;
-    }
-});
-
-server.use(LC.koa2());
-
-server.use(new CSRF());
-
-server.use(
-    LC.Cloud.CookieSession({
-        framework: 'koa2',
-        secret: LEANCLOUD_APP_KEY,
-        maxAge: 3600000,
-        fetchUser: true
+            context.body = error.message;
+        }
     })
-);
-
-server.use(bodyParser());
-
-server.use(mount(app));
-
-server.listen(LEANCLOUD_APP_PORT);
+    .use(LC.koa2())
+    //    .use(new CSRF())
+    .use(
+        LC.Cloud.CookieSession({
+            framework: 'koa2',
+            secret: LEANCLOUD_APP_KEY,
+            maxAge: 3600000,
+            fetchUser: true
+        })
+    )
+    .use(CORS())
+    .use(bodyParser())
+    .use(mount(app))
+    .listen(LEANCLOUD_APP_PORT);

@@ -1,16 +1,19 @@
-'use strict';
+import 'core-js/es/object';
 
-require('core-js/es/object');
+import Koa from 'koa';
 
-const Koa = require('koa'),
-    mount = require('koa-mount'),
-    { OAuth } = require('./GitHub'),
-    { User } = require('leanengine');
+import { get, post } from 'koa-route';
 
-const app = new Koa();
+import { User, SearchQuery } from 'leanengine';
+
+import { OAuth } from './GitHub';
+
+import { update } from './activity';
+
+export const app = new Koa();
 
 app.use(
-    mount(
+    get(
         '/GitHub/OAuth',
         OAuth(async (context, body) => {
             const user = await User.loginWithAuthData(
@@ -35,8 +38,15 @@ app.use(
             context.body = user.get('github');
         })
     )
-);
+)
+    .use(post('/activity/update', update))
+    .use(
+        get('/activity', async context => {
+            const search = new SearchQuery('Activity');
 
-app.use(context => (context.body = 'Hello, FCC-CDC!'));
-
-module.exports = app;
+            context.body = await search
+                .queryString(context.query.keywords)
+                .find();
+        })
+    )
+    .use(context => (context.body = 'Hello, FCC-CDC!'));
