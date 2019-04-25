@@ -12,9 +12,14 @@
         "lint": "eslint source/ --fix",
         "pack": "babel source/ -d dist/ -s",
         "build": "npm run format  &&  npm run lint  &&  npm run pack",
-        "dev": "npm run build  &&  nodemon --inspect dist/",
+        "dev": "npm run format  &&  npm run pack  &&  node --inspect dist/",
         "test": "npm run build",
         "start": "node dist/"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm run build  &&  git add ."
+        }
     },
     "dependencies": {
         "@fcc-cdc/it-events": "^0.5.0",
@@ -23,6 +28,7 @@
         "koa": "^2.7.0",
         "koa-bodyparser": "^4.2.1",
         "koa-csrf": "^3.0.7",
+        "koa-logger": "^3.2.0",
         "koa-mount": "^4.0.0",
         "koa-route": "^3.2.0",
         "leancloud-storage": "^3.13.0",
@@ -35,7 +41,7 @@
         "@babel/plugin-transform-runtime": "^7.4.3",
         "@babel/preset-env": "^7.4.3",
         "eslint": "^5.16.0",
-        "nodemon": "^1.18.11",
+        "husky": "^2.1.0",
         "prettier": "^1.17.0"
     },
     "prettier": {

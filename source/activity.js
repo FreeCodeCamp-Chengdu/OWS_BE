@@ -32,3 +32,17 @@ export async function update(context) {
 
     fetching = 0;
 }
+
+export async function search(context) {
+    const { keywords } = context.query,
+        query = new LC.Query('Activity');
+
+    if (keywords)
+        query.contains('title', keywords).contains('address', keywords);
+
+    context.body = await query
+        .addDescending('start')
+        .addDescending('end')
+        .limit(20)
+        .find();
+}

@@ -1,5 +1,7 @@
 import Koa from 'koa';
 
+import Logger from 'koa-logger';
+
 import mount from 'koa-mount';
 
 import CORS from '@koa/cors';
@@ -27,13 +29,15 @@ LC.init({
 });
 
 server
+    .use(Logger())
     .use(async (context, next) => {
         try {
             await next();
         } catch (error) {
             console.error(error);
 
-            context.body = error.message;
+            (context.status = (error.context || '').status || 500),
+            (context.body = error.message);
         }
     })
     .use(LC.koa2())

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.update = update;
+exports.search = search;
 
 var _asyncIterator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncIterator"));
 
@@ -56,5 +57,14 @@ async function update(context) {
   }
 
   fetching = 0;
+}
+
+async function search(context) {
+  const {
+    keywords
+  } = context.query,
+        query = new _leanengine.default.Query('Activity');
+  if (keywords) query.contains('title', keywords).contains('address', keywords);
+  context.body = await query.addDescending('start').addDescending('end').limit(20).find();
 }
 //# sourceMappingURL=activity.js.map

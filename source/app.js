@@ -4,18 +4,20 @@ import Koa from 'koa';
 
 import { get, post } from 'koa-route';
 
-import { User, SearchQuery } from 'leanengine';
+import { User } from 'leanengine';
 
 import { OAuth } from './GitHub';
 
-import { update } from './activity';
+import { update, search } from './activity';
 
 export const app = new Koa();
+
+const { GITHUB_APP_ID, GITHUB_APP_SECRET } = process.env;
 
 app.use(
     get(
         '/GitHub/OAuth',
-        OAuth(async (context, body) => {
+        OAuth(GITHUB_APP_ID, GITHUB_APP_SECRET, async (context, body) => {
             const user = await User.loginWithAuthData(
                 {
                     access_token: body.access_token,
@@ -26,6 +28,8 @@ app.use(
                 'github'
             );
 
+            context.saveCurrentUser(user);
+
             await user.save(
                 {
                     username: body.user.login,
@@ -35,18 +39,21 @@ app.use(
                 { user }
             );
 
-            context.body = user.get('github');
+            context.redirect('/?token=' + body.access_token);
         })
     )
 )
     .use(post('/activity/update', update))
+    .use(get('/activity', search))
     .use(
-        get('/activity', async context => {
-            const search = new SearchQuery('Activity');
-
-            context.body = await search
-                .queryString(context.query.keywords)
-                .find();
-        })
-    )
-    .use(context => (context.body = 'Hello, FCC-CDC!'));
+        context =>
+            (context.body = `
+<h1>Hello, ${
+                context.currentUser
+                    ? context.currentUser.get('username')
+                    : 'FCC-CDC'
+                }!</h1>
+<a href="https://github.com/login/oauth/authorize?client_id=${GITHUB_APP_ID}&scope=user,repo">
+    Sign in
+</a>`)
+    );

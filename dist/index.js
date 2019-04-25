@@ -4,6 +4,8 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 
 var _koa = _interopRequireDefault(require("koa"));
 
+var _koaLogger = _interopRequireDefault(require("koa-logger"));
+
 var _koaMount = _interopRequireDefault(require("koa-mount"));
 
 var _cors = _interopRequireDefault(require("@koa/cors"));
@@ -29,12 +31,12 @@ _leanengine.default.init({
   masterKey: LEANCLOUD_APP_MASTER_KEY
 });
 
-server.use(async (context, next) => {
+server.use((0, _koaLogger.default)()).use(async (context, next) => {
   try {
     await next();
   } catch (error) {
     console.error(error);
-    context.body = error.message;
+    context.status = (error.context || '').status || 500, context.body = error.message;
   }
 }).use(_leanengine.default.koa2()) //    .use(new CSRF())
 .use(_leanengine.default.Cloud.CookieSession({
