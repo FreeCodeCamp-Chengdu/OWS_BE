@@ -1,13 +1,11 @@
+import '@babel/polyfill';
+import 'core-js/es';
+
 import Koa from 'koa';
-
 import Logger from 'koa-logger';
-
 import mount from 'koa-mount';
-
 import CORS from '@koa/cors';
-
 import bodyParser from 'koa-bodyparser';
-
 //import CSRF from 'koa-csrf';
 
 import LC from 'leanengine';

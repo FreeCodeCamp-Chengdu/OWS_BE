@@ -14,4 +14,11 @@
 
 ## RESTful API
 
--   `GET` https://fcc-cd.leanapp.cn/activity/?keywords=成都
+-   `GET` https://fcc-cd.leanapp.cn/activity/
+    -   `keywords`：类 Google 搜索字符串
+    -   `rows`：分页行数
+    -   `page`：页码
+    -   `from`：[JS `Date` 兼容格式][1]
+    -   `to`：[JS `Date` 兼容格式][1]
+
+[1]: https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Date

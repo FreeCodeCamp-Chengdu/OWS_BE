@@ -14,15 +14,16 @@ var _leanengine = _interopRequireDefault(require("leanengine"));
 
 var _itEvents = _interopRequireDefault(require("@fcc-cdc/it-events"));
 
-const query = new _leanengine.default.Query('Activity'),
-      Activity = _leanengine.default.Object.extend('Activity');
+var _utility = require("./utility");
+
+const Activity = _leanengine.default.Object.extend('Activity');
 
 var fetching;
 
 async function update(context) {
   if (fetching) throw new RangeError('Crawler is running');
   fetching = 1;
-  const list = (await query.find()).map(item => item.toJSON());
+  const list = (await new _leanengine.default.Query('Activity').find()).map(item => item.toJSON());
 
   try {
     var _iteratorNormalCompletion = true;
@@ -35,7 +36,12 @@ async function update(context) {
         let item = _value;
         const data = item.objectId ? _leanengine.default.Object.createWithoutData('Activity', item.objectId) : new Activity();
         item.link = item.link + '';
-        await data.save(item);
+        delete item.objectId;
+        delete item.createdAt;
+        delete item.updatedAt;
+        await data.save(item, {
+          user: context.currentUser
+        });
       }
     } catch (err) {
       _didIteratorError = true;
@@ -60,11 +66,17 @@ async function update(context) {
 }
 
 async function search(context) {
-  const {
-    keywords
-  } = context.query,
-        query = new _leanengine.default.Query('Activity');
-  if (keywords) query.contains('title', keywords).contains('address', keywords);
-  context.body = await query.addDescending('start').addDescending('end').limit(20).find();
+  var {
+    keywords,
+    page,
+    rows,
+    from,
+    to
+  } = context.query;
+  page = page || 1, rows = rows || 20, from = new Date(from), to = new Date(to);
+  const query = keywords ? (0, _utility.searchQuery)('Activity', ['title', 'address'], keywords) : new _leanengine.default.Query('Activity');
+  if (!isNaN(+from)) query.greaterThanOrEqualTo('start', from);
+  if (!isNaN(+to)) query.lessThanOrEqualTo('start', to);
+  context.body = await query.addDescending('start').addDescending('end').limit(rows).skip((page - 1) * rows).find();
 }
 //# sourceMappingURL=activity.js.map

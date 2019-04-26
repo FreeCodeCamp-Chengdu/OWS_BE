@@ -1,14 +1,12 @@
-import 'core-js/es/object';
-
 import Koa from 'koa';
-
 import { get, post } from 'koa-route';
 
 import { User } from 'leanengine';
 
 import { OAuth } from './GitHub';
-
 import { update, search } from './activity';
+
+import { scheduleJob, RecurrenceRule } from 'node-schedule';
 
 export const app = new Koa();
 
@@ -57,3 +55,9 @@ app.use(
     Sign in
 </a>`)
     );
+
+const rule = new RecurrenceRule();
+
+rule.hour = 1;
+
+scheduleJob(rule, () => update({ query: {} }));

@@ -7,8 +7,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.app = void 0;
 
-require("core-js/es/object");
-
 var _koa = _interopRequireDefault(require("koa"));
 
 var _koaRoute = require("koa-route");
@@ -18,6 +16,8 @@ var _leanengine = require("leanengine");
 var _GitHub = require("./GitHub");
 
 var _activity = require("./activity");
+
+var _nodeSchedule = require("node-schedule");
 
 const app = new _koa.default();
 exports.app = app;
@@ -46,4 +46,9 @@ app.use((0, _koaRoute.get)('/GitHub/OAuth', (0, _GitHub.OAuth)(GITHUB_APP_ID, GI
 <a href="https://github.com/login/oauth/authorize?client_id=${GITHUB_APP_ID}&scope=user,repo">
     Sign in
 </a>`);
+const rule = new _nodeSchedule.RecurrenceRule();
+rule.hour = 1;
+(0, _nodeSchedule.scheduleJob)(rule, () => (0, _activity.update)({
+  query: {}
+}));
 //# sourceMappingURL=app.js.map

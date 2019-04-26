@@ -2,6 +2,10 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
+require("@babel/polyfill");
+
+require("core-js/es");
+
 var _koa = _interopRequireDefault(require("koa"));
 
 var _koaLogger = _interopRequireDefault(require("koa-logger"));
