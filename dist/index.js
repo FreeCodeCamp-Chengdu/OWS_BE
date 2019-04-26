@@ -40,7 +40,7 @@ server.use((0, _koaLogger.default)()).use(async (context, next) => {
     await next();
   } catch (error) {
     console.error(error);
-    context.status = (error.context || '').status || 500, context.body = error.message;
+    context.status = error.code || 500, context.body = error.message;
   }
 }).use(_leanengine.default.koa2()) //    .use(new CSRF())
 .use(_leanengine.default.Cloud.CookieSession({

@@ -15,10 +15,23 @@
 ## RESTful API
 
 -   `GET` https://fcc-cd.leanapp.cn/activity/
+
     -   `keywords`：类 Google 搜索字符串
     -   `rows`：分页行数
     -   `page`：页码
     -   `from`：[JS `Date` 兼容格式][1]
     -   `to`：[JS `Date` 兼容格式][1]
 
+-   `POST` https://fcc-cd.leanapp.cn/form/?source=JinShuJu
+
+    -   `id`：表单 ID（**表单公开网址**最后一段）
+    -   `user`：[个人 API Key][2]
+    -   `key`：[个人 API Secret][3]
+
+-   `POST` https://fcc-cd.leanapp.cn/form/reply?source=JinShuJu
+
+    -   填在 `https://jinshuju.net/forms/表单ID/webhook` 页面的设置表单中
+
 [1]: https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Date
+[2]: https://help.jinshuju.net/articles/api-auth.html
+[3]: https://jinshuju.net/profile/api

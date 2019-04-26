@@ -1,22 +1,10 @@
 import { URLSearchParams } from 'url';
 
-import fetch from 'node-fetch';
+import { request, errorHandler } from './utility';
 
-async function handleError(context, body, onError) {
-    const error = Object.assign(new URIError(body.error_description), {
-        context,
-        body
-    });
-
-    if (onError) await onError(context, error);
-    else throw error;
-}
-
-export function OAuth(client_id, client_secret, onDone, onError) {
-    onError = onError instanceof Function && onError;
-
+export function OAuth(client_id, client_secret, onDone) {
     return async context => {
-        var response = await fetch(
+        var response = await request(
             'https://github.com/login/oauth/access_token',
             {
                 method: 'POST',
@@ -24,7 +12,8 @@ export function OAuth(client_id, client_secret, onDone, onError) {
                     client_id,
                     client_secret,
                     code: context.query.code
-                })
+                }),
+                errorHandler
             }
         );
 
@@ -32,21 +21,18 @@ export function OAuth(client_id, client_secret, onDone, onError) {
             new URLSearchParams(await response.text()).entries()
         );
 
-        if (response.status > 299)
-            return await handleError(context, body, onError);
-
         if (body.scope) body.scope = body.scope.split(',');
 
-        response = await fetch('https://api.github.com/user', {
+        response = await request('https://api.github.com/user', {
             headers: {
                 Authorization: `token ${body.access_token}`,
                 Accept: 'application/json'
-            }
+            },
+            errorHandler
         });
 
         body.user = await response.json();
 
-        if (response.status > 299) await handleError(context, body, onError);
-        else await onDone(context, body);
+        await onDone(context, body);
     };
 }
