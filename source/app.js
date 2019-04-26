@@ -7,6 +7,8 @@ import * as Form from './form';
 
 import { scheduleJob, RecurrenceRule } from 'node-schedule';
 
+import LC from 'leanengine';
+
 export const app = new Koa()
     .use(get('/', Session.entry))
     .use(get('/OAuth', context => Session[context.query.source](context)))
@@ -17,6 +19,17 @@ export const app = new Koa()
         post('/form/reply', context =>
             Form[context.query.source].reply(context)
         )
+    )
+    .use(
+        get('/form/reply/:id', async (context, id) => {
+            var reply = LC.Object.createWithoutData('Reply', id);
+
+            await reply.fetch({ include: ['form', 'user'] });
+
+            reply = reply.toJSON();
+
+            context.body = Form[reply.form.source].query(reply);
+        })
     );
 
 const rule = new RecurrenceRule();

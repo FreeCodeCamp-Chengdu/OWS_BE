@@ -13,9 +13,10 @@ export async function update(context) {
 
     fetching = 1;
 
-    const list = (await new LC.Query('Activity').find()).map(item =>
-        item.toJSON()
-    );
+    const list = (await new LC.Query('Activity')
+        .greaterThanOrEqualTo('start', new Date())
+        .limit(1000)
+        .find()).map(item => item.toJSON());
 
     try {
         for await (let item of updateEvents(list, context.query.interval)) {

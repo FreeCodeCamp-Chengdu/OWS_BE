@@ -23,7 +23,7 @@ var fetching;
 async function update(context) {
   if (fetching) throw new RangeError('Crawler is running');
   fetching = 1;
-  const list = (await new _leanengine.default.Query('Activity').find()).map(item => item.toJSON());
+  const list = (await new _leanengine.default.Query('Activity').greaterThanOrEqualTo('start', new Date()).limit(1000).find()).map(item => item.toJSON());
 
   try {
     var _iteratorNormalCompletion = true;

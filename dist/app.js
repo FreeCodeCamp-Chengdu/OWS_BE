@@ -21,7 +21,17 @@ var Form = _interopRequireWildcard(require("./form"));
 
 var _nodeSchedule = require("node-schedule");
 
-const app = new _koa.default().use((0, _koaRoute.get)('/', Session.entry)).use((0, _koaRoute.get)('/OAuth', context => Session[context.query.source](context))).use((0, _koaRoute.post)('/activity/update', _activity.update)).use((0, _koaRoute.get)('/activity', _activity.search)).use((0, _koaRoute.post)('/form', context => Form[context.query.source].create(context))).use((0, _koaRoute.post)('/form/reply', context => Form[context.query.source].reply(context)));
+var _leanengine = _interopRequireDefault(require("leanengine"));
+
+const app = new _koa.default().use((0, _koaRoute.get)('/', Session.entry)).use((0, _koaRoute.get)('/OAuth', context => Session[context.query.source](context))).use((0, _koaRoute.post)('/activity/update', _activity.update)).use((0, _koaRoute.get)('/activity', _activity.search)).use((0, _koaRoute.post)('/form', context => Form[context.query.source].create(context))).use((0, _koaRoute.post)('/form/reply', context => Form[context.query.source].reply(context))).use((0, _koaRoute.get)('/form/reply/:id', async (context, id) => {
+  var reply = _leanengine.default.Object.createWithoutData('Reply', id);
+
+  await reply.fetch({
+    include: ['form', 'user']
+  });
+  reply = reply.toJSON();
+  context.body = Form[reply.form.source].query(reply);
+}));
 exports.app = app;
 const rule = new _nodeSchedule.RecurrenceRule();
 rule.hour = 1;

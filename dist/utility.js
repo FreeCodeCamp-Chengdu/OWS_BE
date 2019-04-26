@@ -8,14 +8,24 @@ Object.defineProperty(exports, "__esModule", {
 exports.request = request;
 exports.errorHandler = errorHandler;
 exports.searchQuery = searchQuery;
+exports.updateRecord = updateRecord;
 
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 
-var _leanengine = require("leanengine");
+var _leanengine = _interopRequireDefault(require("leanengine"));
 
 var _nodeFetch = _interopRequireDefault(require("node-fetch"));
 
-async function request(URI, _ref) {
+/**
+ * @param {String|URL}       URI
+ * @param {Object}           [options={}]           - https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters
+ * @param {HTTPErrorHandler} [options.errorHandler]
+ *
+ * @return {Response} https://developer.mozilla.org/en-US/docs/Web/API/Response
+ *
+ * @throw {URIError} With a `response` property
+ */
+async function request(URI, _ref = {}) {
   let {
     errorHandler
   } = _ref,
@@ -28,6 +38,14 @@ async function request(URI, _ref) {
   error.response = response;
   throw error;
 }
+/**
+ * @typedef {Function} HTTPErrorHandler
+ *
+ * @param {Response} response
+ *
+ * @return {Error}
+ */
+
 
 async function errorHandler(response) {
   const body = await response.json();
@@ -40,11 +58,26 @@ async function errorHandler(response) {
  * @param {String[]} keys
  * @param {String}   words
  *
- * @return {Query}
+ * @return {AV.Query} https://leancloud.github.io/javascript-sdk/docs/AV.Query.html
  */
 
 
 function searchQuery(table, keys, words) {
-  return _leanengine.Query.or(...words.split(/\s+/).map(word => keys.map(key => new _leanengine.Query(table).contains(key, word))).flat());
+  return _leanengine.default.Query.or(...words.split(/\s+/).map(word => keys.map(key => new _leanengine.default.Query(table).contains(key, word))).flat());
+}
+/**
+ * @param {String} table
+ * @param {Object} data
+ * @param {Object} [options] - https://leancloud.github.io/javascript-sdk/docs/global.html#AuthOptions
+ *
+ * @return {AV.Object} https://leancloud.github.io/javascript-sdk/docs/AV.Object.html
+ */
+
+
+async function updateRecord(table, data, options) {
+  var record = await searchQuery(table, Object.keys(data), Object.values(data).join(' ')).find();
+  record = record[0] || new (_leanengine.default.Object.extend(table))();
+  await record.save(data, options);
+  return record;
 }
 //# sourceMappingURL=utility.js.map
