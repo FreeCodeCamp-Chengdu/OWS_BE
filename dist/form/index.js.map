@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../source/form/index.js"],"names":["JinShuJu","JSJ"],"mappings":";;;;;;;;;AAAA;;AAEO,MAAMA,QAAQ,GAAGC,GAAjB","sourcesContent":["import * as JSJ from './JinShuJu';\n\nexport const JinShuJu = JSJ;\n"],"file":"index.js"}

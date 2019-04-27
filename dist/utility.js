@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.request = request;
 exports.errorHandler = errorHandler;
+exports.valueOf = valueOf;
 exports.searchQuery = searchQuery;
 exports.updateRecord = updateRecord;
 
@@ -54,6 +55,25 @@ async function errorHandler(response) {
   return error;
 }
 /**
+ * @param {HTMLElement} field
+ *
+ * @return {String|String[]}
+ */
+
+
+function valueOf(field) {
+  var input = field.querySelector('input[name]:not([type="radio"], [type="checkbox"]), textarea[name]');
+  if (input) return input.value;
+  input = field.querySelector('select[name]');
+  if (input) return Array.from(input.options, ({
+    value
+  }) => value).filter(Boolean);
+  input = field.querySelectorAll('input[name][type="radio"], input[name][type="checkbox"]');
+  if (input[0]) return Array.from(input, ({
+    value
+  }) => value).filter(Boolean);
+}
+/**
  * @param {String}   table
  * @param {String[]} keys
  * @param {String}   words
@@ -75,8 +95,8 @@ function searchQuery(table, keys, words) {
 
 
 async function updateRecord(table, data, options) {
-  var record = await searchQuery(table, Object.keys(data), Object.values(data).join(' ')).find();
-  record = record[0] || new (_leanengine.default.Object.extend(table))();
+  var record = await searchQuery(table, Object.keys(data), Object.values(data).join(' ')).first();
+  record = record || new (_leanengine.default.Object.extend(table))();
   await record.save(data, options);
   return record;
 }

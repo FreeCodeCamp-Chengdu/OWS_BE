@@ -13,7 +13,7 @@
         "pack": "babel source/ -d dist/ -s",
         "build": "npm run format  &&  npm run lint  &&  npm run pack",
         "dev": "npm run format  &&  npm run pack  &&  node --inspect dist/",
-        "test": "npm run build",
+        "deploy": "npm run build  &&  lean deploy",
         "start": "node dist/"
     },
     "husky": {
@@ -27,6 +27,7 @@
         "@fcc-cdc/it-events": "^0.5.0",
         "@koa/cors": "^3.0.0",
         "core-js": "^3.0.1",
+        "jsdom": "^15.0.0",
         "koa": "^2.7.0",
         "koa-bodyparser": "^4.2.1",
         "koa-csrf": "^3.0.7",

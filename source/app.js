@@ -28,7 +28,13 @@ export const app = new Koa()
 
             reply = reply.toJSON();
 
-            context.body = Form[reply.form.source].query(reply);
+            for (let key in reply)
+                if (key !== 'objectId')
+                    return (context.body = Form[reply.form.source].query(
+                        reply
+                    ));
+
+            throw Object.assign(new URIError(id + ' not found'), { code: 404 });
         })
     );
 

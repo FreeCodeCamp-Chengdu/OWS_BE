@@ -30,7 +30,12 @@ const app = new _koa.default().use((0, _koaRoute.get)('/', Session.entry)).use((
     include: ['form', 'user']
   });
   reply = reply.toJSON();
-  context.body = Form[reply.form.source].query(reply);
+
+  for (let key in reply) if (key !== 'objectId') return context.body = Form[reply.form.source].query(reply);
+
+  throw Object.assign(new URIError(id + ' not found'), {
+    code: 404
+  });
 }));
 exports.app = app;
 const rule = new _nodeSchedule.RecurrenceRule();

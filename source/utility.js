@@ -45,6 +45,31 @@ export async function errorHandler(response) {
 }
 
 /**
+ * @param {HTMLElement} field
+ *
+ * @return {String|String[]}
+ */
+export function valueOf(field) {
+    var input = field.querySelector(
+        'input[name]:not([type="radio"], [type="checkbox"]), textarea[name]'
+    );
+
+    if (input) return input.value;
+
+    input = field.querySelector('select[name]');
+
+    if (input)
+        return Array.from(input.options, ({ value }) => value).filter(Boolean);
+
+    input = field.querySelectorAll(
+        'input[name][type="radio"], input[name][type="checkbox"]'
+    );
+
+    if (input[0])
+        return Array.from(input, ({ value }) => value).filter(Boolean);
+}
+
+/**
  * @param {String}   table
  * @param {String[]} keys
  * @param {String}   words
@@ -74,9 +99,9 @@ export async function updateRecord(table, data, options) {
         table,
         Object.keys(data),
         Object.values(data).join(' ')
-    ).find();
+    ).first();
 
-    record = record[0] || new (LC.Object.extend(table))();
+    record = record || new (LC.Object.extend(table))();
 
     await record.save(data, options);
 
