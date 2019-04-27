@@ -30,4 +30,8 @@
 
     -   填在 `https://jinshuju.net/forms/表单ID/webhook` 页面的设置表单中
 
+-   `GET` https://fcc-cd.leanapp.cn/form/表单ID/reply?source=JinShuJu
+
+-   `GET` https://fcc-cd.leanapp.cn/form/表单ID/reply/回复ID?source=JinShuJu
+
 [1]: https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Date

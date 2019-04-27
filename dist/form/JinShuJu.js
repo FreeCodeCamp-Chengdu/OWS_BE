@@ -9,6 +9,8 @@ exports.create = create;
 exports.reply = reply;
 exports.query = query;
 
+var _objectSpread2 = _interopRequireDefault(require("@babel/runtime/helpers/objectSpread"));
+
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 
 var _leanengine = _interopRequireDefault(require("leanengine"));
@@ -96,7 +98,9 @@ async function reply(context) {
     useMasterKey: true
   });
   await new Reply().save({
+    source: 'JinShuJu',
     form: meta,
+    form_id: form,
     id: serial_number,
     system: info_os,
     browser: info_browser,
@@ -114,16 +118,22 @@ function query(reply) {
       fields
     },
     user: {
+      username,
       email,
       mobilePhoneNumber
     }
   } = reply;
-  return Object.entries(Object.assign(data, {
+  const user = {
+    username,
     email,
     mobile: mobilePhoneNumber
-  })).map(([key, value]) => Object.assign({
-    key,
-    value
-  }, fields.find(item => item.key === key || item.type === key)));
+  };
+  return (0, _objectSpread2.default)({}, reply, {
+    user,
+    data: Object.entries(Object.assign(data, user)).map(([key, value]) => (0, _objectSpread2.default)({
+      key,
+      value
+    }, fields.find(item => item.key === key || item.type === key)))
+  });
 }
 //# sourceMappingURL=JinShuJu.js.map

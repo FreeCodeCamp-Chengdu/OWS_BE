@@ -95,7 +95,9 @@ export async function reply(context) {
         });
 
     await new Reply().save({
+        source: 'JinShuJu',
         form: meta,
+        form_id: form,
         id: serial_number,
         system: info_os,
         browser: info_browser,
@@ -111,21 +113,22 @@ export function query(reply) {
     var {
         data,
         form: { fields },
-        user: { email, mobilePhoneNumber }
+        user: { username, email, mobilePhoneNumber }
     } = reply;
 
-    return Object.entries(
-        Object.assign(data, {
-            email,
-            mobile: mobilePhoneNumber
-        })
-    ).map(([key, value]) =>
-        Object.assign(
-            {
-                key,
-                value
-            },
-            fields.find(item => item.key === key || item.type === key)
-        )
-    );
+    const user = {
+        username,
+        email,
+        mobile: mobilePhoneNumber
+    };
+
+    return {
+        ...reply,
+        user,
+        data: Object.entries(Object.assign(data, user)).map(([key, value]) => ({
+            key,
+            value,
+            ...fields.find(item => item.key === key || item.type === key)
+        }))
+    };
 }
