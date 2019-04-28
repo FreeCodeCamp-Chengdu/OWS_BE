@@ -9,7 +9,8 @@ const Activity = LC.Object.extend('Activity');
 var fetching;
 
 export async function update(context) {
-    if (fetching) throw new RangeError('Crawler is running');
+    if (fetching)
+        throw Object.assign(new Error('Crawler is running'), { code: 400 });
 
     fetching = 1;
 
@@ -41,12 +42,9 @@ export async function update(context) {
 }
 
 export async function search(context) {
-    var { keywords, page, rows, from, to } = context.query;
+    var { keywords, page = 1, rows = 10, from, to } = context.query;
 
-    (page = page || 1),
-    (rows = rows || 20),
-    (from = new Date(from)),
-    (to = new Date(to));
+    (from = new Date(from)), (to = new Date(to));
 
     const query = keywords
         ? searchQuery('Activity', ['title', 'address'], keywords)

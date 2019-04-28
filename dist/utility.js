@@ -9,6 +9,7 @@ exports.count = count;
 exports.request = request;
 exports.errorHandler = errorHandler;
 exports.valueOf = valueOf;
+exports.requireSession = requireSession;
 exports.searchQuery = searchQuery;
 exports.updateRecord = updateRecord;
 
@@ -103,6 +104,21 @@ function valueOf(field) {
   if (input[0]) return Array.from(input, ({
     value
   }) => value).filter(Boolean);
+}
+/**
+ * @param {Function} middleware
+ *
+ * @return {Function}
+ */
+
+
+function requireSession(middleware) {
+  return function (...parameter) {
+    if (parameter[0].currentUser) return middleware.apply(this, parameter);
+    throw Object.assign(new Error('Signed session is required'), {
+      code: 401
+    });
+  };
 }
 /**
  * @param {String}   table

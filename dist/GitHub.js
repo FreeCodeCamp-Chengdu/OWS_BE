@@ -11,12 +11,17 @@ var _utility = require("./utility");
 
 function OAuth(client_id, client_secret, onDone) {
   return async context => {
+    const {
+      code,
+      state
+    } = context.query;
     var response = await (0, _utility.request)('https://github.com/login/oauth/access_token', {
       method: 'POST',
       body: new _url.URLSearchParams({
         client_id,
         client_secret,
-        code: context.query.code
+        code,
+        state
       }),
       errorHandler: _utility.errorHandler
     });
@@ -30,7 +35,7 @@ function OAuth(client_id, client_secret, onDone) {
       errorHandler: _utility.errorHandler
     });
     body.user = await response.json();
-    await onDone(context, body);
+    await onDone(context, body, state);
   };
 }
 //# sourceMappingURL=GitHub.js.map

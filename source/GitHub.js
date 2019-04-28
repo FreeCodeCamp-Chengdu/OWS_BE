@@ -4,6 +4,8 @@ import { request, errorHandler } from './utility';
 
 export function OAuth(client_id, client_secret, onDone) {
     return async context => {
+        const { code, state } = context.query;
+
         var response = await request(
             'https://github.com/login/oauth/access_token',
             {
@@ -11,7 +13,8 @@ export function OAuth(client_id, client_secret, onDone) {
                 body: new URLSearchParams({
                     client_id,
                     client_secret,
-                    code: context.query.code
+                    code,
+                    state
                 }),
                 errorHandler
             }
@@ -33,6 +36,6 @@ export function OAuth(client_id, client_secret, onDone) {
 
         body.user = await response.json();
 
-        await onDone(context, body);
+        await onDone(context, body, state);
     };
 }

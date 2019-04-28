@@ -46,7 +46,6 @@ server.use((0, _koaLogger.default)()).use(async (context, next) => {
 .use(_leanengine.default.Cloud.CookieSession({
   framework: 'koa2',
   secret: LEANCLOUD_APP_KEY,
-  maxAge: 3600000,
-  fetchUser: true
+  maxAge: 3600000
 })).use((0, _cors.default)()).use((0, _koaBodyparser.default)()).use((0, _koaMount.default)(_app.app)).listen(LEANCLOUD_APP_PORT);
 //# sourceMappingURL=index.js.map

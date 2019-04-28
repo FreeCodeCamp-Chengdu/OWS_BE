@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.queryReply = queryReply;
 exports.queryForm = queryForm;
+exports.searchForm = searchForm;
 exports.queryStatistic = queryStatistic;
 exports.JinShuJu = void 0;
 
@@ -53,6 +54,15 @@ async function queryForm(vendor, context, id) {
     return item;
   });
   context.body = form;
+}
+
+async function searchForm(context) {
+  const {
+    keywords,
+    page = 1,
+    rows = 10
+  } = context.query;
+  context.body = await (keywords ? (0, _utility.searchQuery)('Form', ['name', 'description', 'source'], keywords) : new _leanengine.default.Query('Form')).skip((page - 1) * rows).limit(rows).find();
 }
 
 const FormStatistic = _leanengine.default.Object.extend('FormStatistic');

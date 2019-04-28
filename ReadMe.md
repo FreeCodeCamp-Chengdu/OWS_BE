@@ -25,6 +25,13 @@
 -   `POST` https://fcc-cd.leanapp.cn/form/?source=JinShuJu
 
     -   `id`：表单 ID（**表单公开网址**最后一段）
+    -   需要访问首页**登录**
+
+-   `GET` https://fcc-cd.leanapp.cn/form/
+
+    -   `keywords`：类 Google 搜索字符串
+    -   `rows`：分页行数
+    -   `page`：页码
 
 -   `POST` https://fcc-cd.leanapp.cn/form/reply?source=JinShuJu
 

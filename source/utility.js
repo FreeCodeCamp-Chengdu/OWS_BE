@@ -102,6 +102,21 @@ export function valueOf(field) {
 }
 
 /**
+ * @param {Function} middleware
+ *
+ * @return {Function}
+ */
+export function requireSession(middleware) {
+    return function(...parameter) {
+        if (parameter[0].currentUser) return middleware.apply(this, parameter);
+
+        throw Object.assign(new Error('Signed session is required'), {
+            code: 401
+        });
+    };
+}
+
+/**
  * @param {String}   table
  * @param {String[]} keys
  * @param {String}   words

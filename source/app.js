@@ -1,6 +1,8 @@
 import Koa from 'koa';
 import { get, post } from 'koa-route';
 
+import { requireSession } from './utility';
+
 import * as Session from './session';
 import { update, search } from './activity';
 import * as Form from './form';
@@ -10,9 +12,17 @@ import { scheduleJob, RecurrenceRule } from 'node-schedule';
 export const app = new Koa()
     .use(get('/', Session.entry))
     .use(get('/OAuth', context => Session[context.query.source](context)))
-    .use(post('/activity/update', update))
+    .use(post('/activity/update', requireSession(update)))
     .use(get('/activity', search))
-    .use(post('/form', context => Form[context.query.source].create(context)))
+    .use(
+        post(
+            '/form',
+            requireSession(context =>
+                Form[context.query.source].create(context)
+            )
+        )
+    )
+    .use(get('/form', Form.searchForm))
     .use(
         post('/form/reply', context =>
             Form[context.query.source].reply(context)

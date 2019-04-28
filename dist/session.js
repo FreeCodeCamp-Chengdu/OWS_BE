@@ -15,9 +15,13 @@ const {
   GITHUB_APP_SECRET
 } = process.env;
 
-function entry(context) {
+async function entry(context) {
+  const {
+    currentUser
+  } = context;
+  if (currentUser) await currentUser.fetch();
   context.body = `
-<h1>Hello, ${context.currentUser ? context.currentUser.get('username') : 'FCC-CDC'}!</h1>
+<h1>Hello, ${currentUser ? currentUser.get('username') : 'FCC-CDC'}!</h1>
 <a href="https://github.com/login/oauth/authorize?client_id=${GITHUB_APP_ID}&scope=user,repo">
 Sign in
 </a>`;

@@ -13,6 +13,8 @@ var _koa = _interopRequireDefault(require("koa"));
 
 var _koaRoute = require("koa-route");
 
+var _utility = require("./utility");
+
 var Session = _interopRequireWildcard(require("./session"));
 
 var _activity = require("./activity");
@@ -21,7 +23,7 @@ var Form = _interopRequireWildcard(require("./form"));
 
 var _nodeSchedule = require("node-schedule");
 
-const app = new _koa.default().use((0, _koaRoute.get)('/', Session.entry)).use((0, _koaRoute.get)('/OAuth', context => Session[context.query.source](context))).use((0, _koaRoute.post)('/activity/update', _activity.update)).use((0, _koaRoute.get)('/activity', _activity.search)).use((0, _koaRoute.post)('/form', context => Form[context.query.source].create(context))).use((0, _koaRoute.post)('/form/reply', context => Form[context.query.source].reply(context))).use((0, _koaRoute.get)('/form/:fid/reply/:id', Form.queryReply.bind(null, Form))).use((0, _koaRoute.get)('/form/:id', Form.queryForm.bind(null, Form))).use((0, _koaRoute.get)('/form/:id/statistic', Form.queryStatistic));
+const app = new _koa.default().use((0, _koaRoute.get)('/', Session.entry)).use((0, _koaRoute.get)('/OAuth', context => Session[context.query.source](context))).use((0, _koaRoute.post)('/activity/update', (0, _utility.requireSession)(_activity.update))).use((0, _koaRoute.get)('/activity', _activity.search)).use((0, _koaRoute.post)('/form', (0, _utility.requireSession)(context => Form[context.query.source].create(context)))).use((0, _koaRoute.get)('/form', Form.searchForm)).use((0, _koaRoute.post)('/form/reply', context => Form[context.query.source].reply(context))).use((0, _koaRoute.get)('/form/:fid/reply/:id', Form.queryReply.bind(null, Form))).use((0, _koaRoute.get)('/form/:id', Form.queryForm.bind(null, Form))).use((0, _koaRoute.get)('/form/:id/statistic', Form.queryStatistic));
 exports.app = app;
 const rule = new _nodeSchedule.RecurrenceRule();
 rule.hour = 1;

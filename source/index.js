@@ -44,8 +44,7 @@ server
         LC.Cloud.CookieSession({
             framework: 'koa2',
             secret: LEANCLOUD_APP_KEY,
-            maxAge: 3600000,
-            fetchUser: true
+            maxAge: 3600000
         })
     )
     .use(CORS())
