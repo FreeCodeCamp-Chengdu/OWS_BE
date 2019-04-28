@@ -19,7 +19,8 @@ export const app = new Koa()
         )
     )
     .use(get('/form/:fid/reply/:id', Form.queryReply.bind(null, Form)))
-    .use(get('/form/:id/reply', Form.queryReplies.bind(null, Form)));
+    .use(get('/form/:id', Form.queryForm.bind(null, Form)))
+    .use(get('/form/:id/statistic', Form.queryStatistic));
 
 const rule = new RecurrenceRule();
 

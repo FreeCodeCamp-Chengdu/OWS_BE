@@ -3,6 +3,38 @@ import LC from 'leanengine';
 import fetch from 'node-fetch';
 
 /**
+ * @param {Array[]} list - Key-Value pairs
+ *
+ * @return {Object[]} List of `key`, `value`, `count` & `percent`
+ */
+export function count(list) {
+    const cache = {};
+
+    list.forEach(([key, value]) => {
+        const group = (cache[key] = cache[key] || {}),
+            hash = typeof value === 'object' ? JSON.stringify(value) : value;
+
+        group[hash] = group[hash] || { key, value, count: 0 };
+
+        group[hash].count++;
+    });
+
+    return Object.values(cache)
+        .map(group => {
+            group = Object.values(group);
+
+            const sum = group.reduce((sum, { count }) => sum + count, 0);
+
+            return group.map(item => {
+                item.percent = +((item.count / sum) * 100).toFixed(2);
+
+                return item;
+            });
+        })
+        .flat();
+}
+
+/**
  * @param {String|URL}       URI
  * @param {Object}           [options={}]           - https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters
  * @param {HTTPErrorHandler} [options.errorHandler]

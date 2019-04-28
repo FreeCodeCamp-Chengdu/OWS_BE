@@ -2,16 +2,21 @@
 
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
 
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.queryReply = queryReply;
-exports.queryReplies = queryReplies;
+exports.queryForm = queryForm;
+exports.queryStatistic = queryStatistic;
 exports.JinShuJu = void 0;
 
-var _leanengine = require("leanengine");
+var _leanengine = _interopRequireDefault(require("leanengine"));
 
 var JSJ = _interopRequireWildcard(require("./JinShuJu"));
+
+var _utility = require("../utility");
 
 const JinShuJu = JSJ;
 exports.JinShuJu = JinShuJu;
@@ -23,21 +28,55 @@ async function queryReply(Form, context, fid, id) {
   const {
     query
   } = Form[source];
-  var reply = await new _leanengine.Query('Reply').equalTo('source', source).equalTo('form_id', fid).equalTo('id', +id).include('form', 'user').first();
+  var reply = await new _leanengine.default.Query('FormReply').equalTo('source', source).equalTo('form_id', fid).equalTo('id', +id).include('form').first();
   if (!reply) throw Object.assign(new URIError(`${fid}/${id} isn't found in ${source}`), {
     code: 404
   });
   context.body = query(reply.toJSON());
 }
 
-async function queryReplies(Form, context, id) {
+async function queryForm(vendor, context, id) {
   const {
     source
   } = context.query;
   const {
     query
-  } = Form[source];
-  const list = await new _leanengine.Query('Reply').equalTo('source', source).equalTo('form_id', id).include('form', 'user').find();
-  context.body = list.map(item => query(item.toJSON()));
+  } = vendor[source];
+  const form = (await new _leanengine.default.Query('Form').equalTo('id', id).first()).toJSON();
+  const list = await new _leanengine.default.Query('FormReply').equalTo('source', source).equalTo('form_id', id).find();
+  form.replies = list.map(item => {
+    item = item.toJSON();
+    item.form = form;
+    item = query(item);
+    delete item.form;
+    delete item.user;
+    return item;
+  });
+  context.body = form;
+}
+
+const FormStatistic = _leanengine.default.Object.extend('FormStatistic');
+
+_leanengine.default.Cloud.afterSave('FormReply', async ({
+  object
+}) => {
+  const {
+    source,
+    form_id
+  } = object.toJSON();
+  const list = await new _leanengine.default.Query('FormReply').equalTo('source', source).equalTo('form_id', form_id).find();
+  const statistic = await new _leanengine.default.Query('FormStatistic').equalTo('source', source).equalTo('form_id', form_id).first();
+  await (statistic || new FormStatistic()).save({
+    source,
+    form_id,
+    data: (0, _utility.count)(list.map(item => Object.entries(item.toJSON().data).filter(([key]) => key.startsWith('field_'))).flat())
+  });
+});
+
+async function queryStatistic(context, id) {
+  const {
+    source
+  } = context.query;
+  context.body = await new _leanengine.default.Query('FormStatistic').equalTo('source', source).equalTo('form_id', id).first();
 }
 //# sourceMappingURL=index.js.map

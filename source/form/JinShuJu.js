@@ -5,7 +5,7 @@ import { JSDOM } from 'jsdom';
 import { valueOf, updateRecord } from '../utility';
 
 const Form = LC.Object.extend('Form'),
-    Reply = LC.Object.extend('Reply');
+    FormReply = LC.Object.extend('FormReply');
 
 async function parseForm(id) {
     const {
@@ -81,9 +81,12 @@ export async function reply(context) {
             switch (field.type) {
                 case 'email':
                     (user = user || {}), (user.email = extra[key]);
-                    break;
+                    continue;
                 case 'mobile':
                     (user = user || {}), (user.mobilePhoneNumber = extra[key]);
+                    continue;
+                case 'telephone':
+                    continue;
             }
         data[key] = extra[key];
     }
@@ -94,7 +97,7 @@ export async function reply(context) {
             useMasterKey: true
         });
 
-    await new Reply().save({
+    await new FormReply().save({
         source: 'JinShuJu',
         form: meta,
         form_id: form,
@@ -112,20 +115,12 @@ export async function reply(context) {
 export function query(reply) {
     var {
         data,
-        form: { fields },
-        user: { username, email, mobilePhoneNumber }
+        form: { fields }
     } = reply;
-
-    const user = {
-        username,
-        email,
-        mobile: mobilePhoneNumber
-    };
 
     return {
         ...reply,
-        user,
-        data: Object.entries(Object.assign(data, user)).map(([key, value]) => ({
+        data: Object.entries(data).map(([key, value]) => ({
             key,
             value,
             ...fields.find(item => item.key === key || item.type === key)

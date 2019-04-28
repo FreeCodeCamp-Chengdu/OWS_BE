@@ -20,7 +20,7 @@ var _jsdom = require("jsdom");
 var _utility = require("../utility");
 
 const Form = _leanengine.default.Object.extend('Form'),
-      Reply = _leanengine.default.Object.extend('Reply');
+      FormReply = _leanengine.default.Object.extend('FormReply');
 
 async function parseForm(id) {
   const {
@@ -85,10 +85,14 @@ async function reply(context) {
     if (field) switch (field.type) {
       case 'email':
         user = user || {}, user.email = extra[key];
-        break;
+        continue;
 
       case 'mobile':
         user = user || {}, user.mobilePhoneNumber = extra[key];
+        continue;
+
+      case 'telephone':
+        continue;
     }
     data[key] = extra[key];
   }
@@ -97,7 +101,7 @@ async function reply(context) {
     user: context.currentUser,
     useMasterKey: true
   });
-  await new Reply().save({
+  await new FormReply().save({
     source: 'JinShuJu',
     form: meta,
     form_id: form,
@@ -116,21 +120,10 @@ function query(reply) {
     data,
     form: {
       fields
-    },
-    user: {
-      username,
-      email,
-      mobilePhoneNumber
     }
   } = reply;
-  const user = {
-    username,
-    email,
-    mobile: mobilePhoneNumber
-  };
   return (0, _objectSpread2.default)({}, reply, {
-    user,
-    data: Object.entries(Object.assign(data, user)).map(([key, value]) => (0, _objectSpread2.default)({
+    data: Object.entries(data).map(([key, value]) => (0, _objectSpread2.default)({
       key,
       value
     }, fields.find(item => item.key === key || item.type === key)))
