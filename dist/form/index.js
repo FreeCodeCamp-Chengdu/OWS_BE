@@ -7,6 +7,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.createReply = createReply;
 exports.queryReply = queryReply;
 exports.queryForm = queryForm;
 exports.searchForm = searchForm;
@@ -21,6 +22,15 @@ var _utility = require("../utility");
 
 const JinShuJu = JSJ;
 exports.JinShuJu = JinShuJu;
+
+async function createReply(vendor, context, OID) {
+  const form = await _leanengine.default.Object.createWithoutData('Form', OID).fetch();
+  const source = form.get('source');
+  if (source) return await vendor[source].reply(context, form);
+  throw Object.assign(new URIError(OID + ' not found'), {
+    code: 404
+  });
+}
 
 async function queryReply(Form, context, fid, id) {
   const {

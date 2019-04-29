@@ -22,7 +22,7 @@
     -   `from`：[JS `Date` 兼容格式][1]
     -   `to`：[JS `Date` 兼容格式][1]
 
--   `POST` https://fcc-cd.leanapp.cn/form/?source=JinShuJu
+-   `POST` https://fcc-cd.leanapp.cn/form?source=JinShuJu
 
     -   `id`：表单 ID（**表单公开网址**最后一段）
     -   需要访问首页**登录**
@@ -32,10 +32,6 @@
     -   `keywords`：类 Google 搜索字符串
     -   `rows`：分页行数
     -   `page`：页码
-
--   `POST` https://fcc-cd.leanapp.cn/form/reply?source=JinShuJu
-
-    -   填在 `https://jinshuju.net/forms/表单ID/webhook` 页面的设置表单中
 
 -   `GET` https://fcc-cd.leanapp.cn/form/表单ID?source=JinShuJu
 

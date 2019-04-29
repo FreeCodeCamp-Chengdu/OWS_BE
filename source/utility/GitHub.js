@@ -1,6 +1,6 @@
 import { URLSearchParams } from 'url';
 
-import { request, errorHandler } from './utility';
+import { request, errorHandler } from '.';
 
 export function OAuth(client_id, client_secret, onDone) {
     return async context => {
@@ -37,5 +37,23 @@ export function OAuth(client_id, client_secret, onDone) {
         body.user = await response.json();
 
         await onDone(context, body, state);
+    };
+}
+
+export function proxy(tokenGetter) {
+    return async context => {
+        const { url, method, headers, body } = context.request;
+
+        delete headers.host;
+        headers.Authorization = 'token ' + (await tokenGetter(context));
+
+        const response = await request('https://api.github.com' + url, {
+            method,
+            headers,
+            body: Object.keys(body)[0] ? body : null
+        });
+
+        (context.status = response.status),
+        (context.body = await response.json());
     };
 }

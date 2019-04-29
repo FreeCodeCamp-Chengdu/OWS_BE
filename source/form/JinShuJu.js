@@ -43,12 +43,17 @@ export async function create(context) {
 
     const form = await new LC.Query('Form').equalTo('id', id).first();
 
-    await (form || new Form()).save(await parseForm(id));
+    const OID = (await (form || new Form()).save(await parseForm(id))).id;
 
-    (context.status = 201), (context.body = '');
+    context.body = `
+<h1>表单${form ? '更新' : '添加'}成功</h1>
+<p>
+    请将<b>钩子接口网址</b> https://fcc-cd.leanapp.cn/form/${OID}/reply
+    填在<a href="https://jinshuju.net/forms/${id}/webhook">这里</a>
+</p>`;
 }
 
-export async function reply(context) {
+export async function reply(context, meta) {
     const {
         form,
         entry: {
@@ -59,16 +64,6 @@ export async function reply(context) {
             ...extra
         }
     } = context.request.body;
-
-    const meta = await new LC.Query('Form')
-        .equalTo('source', 'JinShuJu')
-        .equalTo('id', form)
-        .first();
-
-    if (!meta)
-        throw Object.assign(new URIError(form + ' not found'), {
-            code: 404
-        });
 
     var fields = meta.get('fields'),
         data = {},

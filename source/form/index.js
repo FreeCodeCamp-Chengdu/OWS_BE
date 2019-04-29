@@ -6,6 +6,18 @@ import { searchQuery, count } from '../utility';
 
 export const JinShuJu = JSJ;
 
+export async function createReply(vendor, context, OID) {
+    const form = await LC.Object.createWithoutData('Form', OID).fetch();
+
+    const source = form.get('source');
+
+    if (source) return await vendor[source].reply(context, form);
+
+    throw Object.assign(new URIError(OID + ' not found'), {
+        code: 404
+    });
+}
+
 export async function queryReply(Form, context, fid, id) {
     const { source } = context.query;
 

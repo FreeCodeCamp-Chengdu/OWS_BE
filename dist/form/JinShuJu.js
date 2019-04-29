@@ -56,11 +56,16 @@ async function create(context) {
     id
   } = context.request.body;
   const form = await new _leanengine.default.Query('Form').equalTo('id', id).first();
-  await (form || new Form()).save((await parseForm(id)));
-  context.status = 201, context.body = '';
+  const OID = (await (form || new Form()).save((await parseForm(id)))).id;
+  context.body = `
+<h1>表单${form ? '更新' : '添加'}成功</h1>
+<p>
+    请将<b>钩子接口网址</b> https://fcc-cd.leanapp.cn/form/${OID}/reply
+    填在<a href="https://jinshuju.net/forms/${id}/webhook">这里</a>
+</p>`;
 }
 
-async function reply(context) {
+async function reply(context, meta) {
   const _context$request$body = context.request.body,
         {
     form,
@@ -72,10 +77,6 @@ async function reply(context) {
     }
   } = _context$request$body,
         extra = (0, _objectWithoutProperties2.default)(_context$request$body.entry, ["info_browser", "info_os", "info_remote_ip", "serial_number"]);
-  const meta = await new _leanengine.default.Query('Form').equalTo('source', 'JinShuJu').equalTo('id', form).first();
-  if (!meta) throw Object.assign(new URIError(form + ' not found'), {
-    code: 404
-  });
   var fields = meta.get('fields'),
       data = {},
       user;

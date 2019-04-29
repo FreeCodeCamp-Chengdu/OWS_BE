@@ -1,6 +1,8 @@
-import LC from 'leanengine';
+import { URL } from 'url';
 
 import fetch from 'node-fetch';
+
+import LC from 'leanengine';
 
 /**
  * @param {Array[]} list - Key-Value pairs
@@ -102,17 +104,34 @@ export function valueOf(field) {
 }
 
 /**
- * @param {Function} middleware
+ * @param {Function}   middleware
+ * @param {String|URL} [errorRedirect='/']
+ * @param {Number}     [redirectSeconds=3]
  *
  * @return {Function}
  */
-export function requireSession(middleware) {
-    return function(...parameter) {
-        if (parameter[0].currentUser) return middleware.apply(this, parameter);
+export function requireSession(
+    middleware,
+    errorRedirect = '/',
+    redirectSeconds = 3
+) {
+    return function(context, ...parameter) {
+        if (context.currentUser)
+            return middleware.apply(this, [context].concat(parameter));
 
-        throw Object.assign(new Error('Signed session is required'), {
-            code: 401
-        });
+        context.status = 403;
+
+        errorRedirect = new URL(errorRedirect, context.request.href) + '';
+
+        context.body = `
+<meta http-equiv="refresh" content="${redirectSeconds}; url=${errorRedirect}">
+
+<h1>Signed session is required!</h1>
+<p>
+    It'll be redirected to
+    <a href="${errorRedirect}">${errorRedirect}</a>
+    in <b>${redirectSeconds}</b> seconds
+</p>`;
     };
 }
 
