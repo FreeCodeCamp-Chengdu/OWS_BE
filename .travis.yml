@@ -17,5 +17,4 @@ deploy:
     on:
         branch: v2
     skip_cleanup: true
-    local_dir: dist/
     github_token: $TOKEN
