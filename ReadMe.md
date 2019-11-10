@@ -3,7 +3,7 @@
 基于 [Koa][1]、[TypeScript][2] 和 [LeanCloud][3] 的 RESTful API
 
 [![NPM Dependency](https://david-dm.org/FreeCodeCamp-Chengdu/OWS_BE.svg)][4]
-[![Build Status](https://travis-ci.com/FreeCodeCamp-Chengdu/OWS_BE.svg?branch=master)][5]
+[![Build Status](https://travis-ci.com/FreeCodeCamp-Chengdu/OWS_BE.svg?branch=v2)][5]
 
 ## 本地开发
 
