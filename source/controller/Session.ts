@@ -6,7 +6,6 @@ import {
     Post,
     Patch,
     Delete,
-    QueryParam,
     Body,
     Ctx,
     UnauthorizedError
@@ -14,13 +13,13 @@ import {
 
 interface SignInToken {
     phone: string;
-    code: string;
+    code?: string;
 }
 
 @JsonController('/session')
 export default class SessionController {
     @Post('/smsCode')
-    sendSMSCode(@QueryParam('phone') phone: string) {
+    sendSMSCode(@Body() { phone }: SignInToken) {
         return User.requestLoginSmsCode(phone);
     }
 
@@ -29,7 +28,7 @@ export default class SessionController {
         @Body() { phone, code }: SignInToken,
         @Ctx() context: Context
     ) {
-        const user = await User.signUpOrlogInWithMobilePhone(phone, code);
+        const user = await User.logInWithMobilePhoneSmsCode(phone, code);
 
         context.saveCurrentUser(user);
 

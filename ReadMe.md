@@ -12,6 +12,10 @@ npm install
 lean up
 ```
 
+## 电邮钩子
+
+LeanCloud 貌似没开放 POP3、IMAP 协议的端口，只能在本地监听 MikeCRM 等**表单服务商**的新数据邮件。
+
 [1]: https://koajs.com/
 [2]: https://www.typescriptlang.org/
 [3]: https://leancloud.cn/

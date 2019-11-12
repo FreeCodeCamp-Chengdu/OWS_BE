@@ -12,12 +12,13 @@
         "url": "https://github.com/FreeCodeCamp-Chengdu/OWS_BE/issues"
     },
     "engines": {
-        "node": "^8.0.0"
+        "node": "^12.0.0"
     },
     "dependencies": {
         "@koa/multer": "^2.0.0",
         "class-transformer": "^0.2.3",
         "class-validator": "0.10.1",
+        "jsdom": "^15.2.1",
         "kcors": "^2.2.2",
         "koa": "^2.11.0",
         "koa-bodyparser": "^4.2.1",
@@ -25,11 +26,14 @@
         "koa-router": "^7.4.0",
         "leancloud-storage": "^3.15.0",
         "leanengine": "^3.4.0",
+        "mail-notifier": "^0.5.0",
         "multer": "^1.4.2",
         "reflect-metadata": "^0.1.13",
-        "routing-controllers": "^0.8.0"
+        "routing-controllers": "^0.8.0",
+        "ts-polyfill": "^3.5.3"
     },
     "devDependencies": {
+        "@types/jsdom": "^12.2.4",
         "@types/koa": "^2.0.52",
         "@types/koa-bodyparser": "^4.3.0",
         "@types/koa-logger": "^3.1.1",
@@ -55,6 +59,7 @@
         "test": "lint-staged",
         "dev": "nodemon --inspect --watch source/**/* -e ts --exec node -r ts-node/register source/",
         "build": "tsc",
+        "deploy": "lint-staged  &&  tsc  &&  lean deploy",
         "start": "node dist/"
     },
     "husky": {
