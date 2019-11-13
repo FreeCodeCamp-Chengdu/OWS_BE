@@ -1,5 +1,6 @@
 import { Context } from 'koa';
-import { User } from 'leanengine';
+import { User, Query } from 'leanengine';
+import { Cloud } from 'leancloud-storage';
 import {
     JsonController,
     Get,
@@ -20,7 +21,7 @@ interface SignInToken {
 export default class SessionController {
     @Post('/smsCode')
     sendSMSCode(@Body() { phone }: SignInToken) {
-        return User.requestLoginSmsCode(phone);
+        return Cloud.requestSmsCode(phone);
     }
 
     @Post('/')
@@ -28,7 +29,19 @@ export default class SessionController {
         @Body() { phone, code }: SignInToken,
         @Ctx() context: Context
     ) {
-        const user = await User.logInWithMobilePhoneSmsCode(phone, code);
+        const user = await User.signUpOrlogInWithMobilePhone(phone, code);
+
+        const temp = await new Query('UserTemp')
+            .equalTo('mobilePhoneNumber', phone)
+            .first();
+
+        if (temp) {
+            const { objectId, createdAt, updatedAt, ...data } = temp.toJSON();
+
+            await user.save(data, { user });
+
+            await temp.destroy();
+        }
 
         context.saveCurrentUser(user);
 
