@@ -5,6 +5,12 @@
 [![NPM Dependency](https://david-dm.org/FreeCodeCamp-Chengdu/OWS_BE.svg)][4]
 [![Build Status](https://travis-ci.com/FreeCodeCamp-Chengdu/OWS_BE.svg?branch=v2)][5]
 
+## 主要特性
+
+1. [MikeCRM 表单提交电邮钩子](source/controller/MikeCRM.ts)
+
+2. [LeanCloud 手机短信验证码登录](source/controller/Session.ts)
+
 ## 本地开发
 
 ```shell
@@ -12,13 +18,8 @@ npm install
 lean up
 ```
 
-## 电邮钩子
-
-LeanCloud 貌似没开放 POP3、IMAP 协议的端口，只能在本地监听 [MikeCRM][6] 等**表单服务商**的新数据邮件。
-
 [1]: https://koajs.com/
 [2]: https://www.typescriptlang.org/
 [3]: https://leancloud.cn/
 [4]: https://david-dm.org/FreeCodeCamp-Chengdu/OWS_BE
 [5]: https://travis-ci.com/FreeCodeCamp-Chengdu/OWS_BE
-[6]: source/controller/MikeCRM.ts
