@@ -1,4 +1,5 @@
 import notifier, { Email } from 'mail-notifier';
+import { listen } from './utiltiy';
 import MikeCRM from './controller/MikeCRM';
 
 const { ADMIN_EMAIL, ADMIN_EMAIL_PW, IMAP_HOST, NOTIFIER_EMAIL } = process.env;
@@ -12,10 +13,10 @@ const client = notifier({
     tlsOptions: { rejectUnauthorized: false }
 });
 
-client
-    .on('mail', ({ from, html }: Email) => {
+client.on('end', () => client.start()).start();
+
+(async () => {
+    for await (const { from, html } of listen<Email>(client, 'mail'))
         if (from.find(({ address }) => address === NOTIFIER_EMAIL))
-            return new MikeCRM(html).saveUser();
-    })
-    .on('end', () => client.start())
-    .start();
+            await new MikeCRM(html).saveUser();
+})();
