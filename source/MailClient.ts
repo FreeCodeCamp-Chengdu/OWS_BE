@@ -14,11 +14,8 @@ const client = notifier({
 
 client
     .on('mail', ({ from, html }: Email) => {
-        if (!from.find(({ address }) => address === NOTIFIER_EMAIL)) return;
-
-        const controller = new MikeCRM();
-
-        return controller.saveUser(html);
+        if (from.find(({ address }) => address === NOTIFIER_EMAIL))
+            return new MikeCRM(html).saveUser();
     })
     .on('end', () => client.start())
     .start();

@@ -1,10 +1,23 @@
 import 'ts-polyfill/lib/es2019-object';
 import { JSDOM } from 'jsdom';
-import LC from 'leanengine';
+import LC, { Query } from 'leanengine';
 
 const UserTemp = LC.Object.extend('UserTemp'),
     number_pattern = /[\d\.]+/,
     ID_pattern = /[\w\-]+/;
+
+interface OrderItem {
+    name?: string;
+    count: number;
+    price: number;
+}
+
+interface Order {
+    id: string;
+    paymentId: string;
+    list: OrderItem[];
+    sum: OrderItem;
+}
 
 export default class MikeCRM {
     static parseMeta(box: Element) {
@@ -21,7 +34,7 @@ export default class MikeCRM {
         };
     }
 
-    static parseOrder(box: Element) {
+    static parseOrder(box: Element): Order {
         const [orderId, orderList] = Array.from(
             box.querySelector('tbody').children
         );
@@ -88,8 +101,20 @@ export default class MikeCRM {
         };
     }
 
-    saveUser(HTML: string) {
-        const { title, fields, order, ...meta } = MikeCRM.parseMail(HTML);
+    id: number;
+    date: Date;
+    location: string;
+    creator: string;
+    title: string;
+    fields: any;
+    order: Order;
+
+    constructor(HTML: string) {
+        Object.assign(this, MikeCRM.parseMail(HTML));
+    }
+
+    async saveUser() {
+        const { title, fields, order, ...meta } = this;
 
         console.group(title);
         console.log(meta);
@@ -97,7 +122,7 @@ export default class MikeCRM {
         console.log(order);
         console.groupEnd();
 
-        return new UserTemp().save({
+        const data = {
             username: fields['姓名'],
             gender: fields['性别'],
             mobilePhoneNumber: fields['手机'],
@@ -105,6 +130,12 @@ export default class MikeCRM {
             company: fields['公司/组织'],
             title: fields['职位'],
             workYear: parseInt(fields['工作经验'] as string)
-        });
+        };
+
+        const user = await new Query('UserTemp')
+            .equalTo('mobilePhoneNumber', data.mobilePhoneNumber)
+            .first();
+
+        return !user ? new UserTemp().save(data) : user.set(data).save();
     }
 }
