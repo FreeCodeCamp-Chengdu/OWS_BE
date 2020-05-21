@@ -64,7 +64,7 @@
     "scripts": {
         "test": "lint-staged",
         "dev": "nodemon --inspect --watch source/**/* -e ts --exec node -r ts-node/register source/",
-        "build": "tsc",
+        "build": "tsc --skipLibCheck",
         "deploy": "lint-staged  &&  tsc  &&  lean deploy",
         "start": "node dist/"
     },
