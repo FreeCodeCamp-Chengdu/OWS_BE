@@ -37,7 +37,7 @@ export async function update(interval?: number) {
 @JsonController('/activity')
 export class ActivityController {
     @Get()
-    search(
+    async search(
         @QueryParam('keywords') keywords: string,
         @QueryParam('page') page = 1,
         @QueryParam('rows') rows = 10,
@@ -55,11 +55,13 @@ export class ActivityController {
 
         if (to) query.lessThanOrEqualTo('start', new Date(to));
 
-        return query
+        const list = await query
             .addDescending('start')
             .addDescending('end')
             .limit(rows)
             .skip((page - 1) * rows)
             .find();
+
+        return list.map(item => item.toJSON());
     }
 }
