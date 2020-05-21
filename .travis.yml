@@ -1,0 +1,23 @@
+branches:
+    only:
+        - v2
+
+language: node_js
+node_js:
+    - lts/*
+cache:
+    directories:
+        - node_modules
+
+install:
+    - npm install
+script:
+    - npm run build
+    - echo source/ >> .gitignore
+    - echo \!dist/ >> .gitignore
+deploy:
+    provider: pages
+    on:
+        branch: v2
+    skip_cleanup: true
+    github_token: $TOKEN

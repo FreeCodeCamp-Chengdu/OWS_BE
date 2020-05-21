@@ -1,0 +1,77 @@
+{
+    "name": "@fcc-cdc/ows-be",
+    "version": "2.1.0",
+    "private": true,
+    "author": "shiy2008@gmail.com",
+    "homepage": "https://web-conf.leanapp.cn",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/FreeCodeCamp-Chengdu/OWS_BE.git"
+    },
+    "bugs": {
+        "url": "https://github.com/FreeCodeCamp-Chengdu/OWS_BE/issues"
+    },
+    "main": "dist/index.js",
+    "engines": {
+        "node": "^12.0.0"
+    },
+    "dependencies": {
+        "@fcc-cdc/it-events": "^1.0.1",
+        "@koa/multer": "^2.0.2",
+        "class-transformer": "^0.2.3",
+        "class-validator": "0.10.1",
+        "iterable-observer": "^1.0.0-beta.4",
+        "jsdom": "^16.2.2",
+        "kcors": "^2.2.2",
+        "koa": "^2.12.0",
+        "koa-bodyparser": "^4.3.0",
+        "koa-logger": "^3.2.1",
+        "koa-router": "^8.0.8",
+        "leancloud-storage": "^3.15.0",
+        "leanengine": "^3.6.0",
+        "mail-notifier": "^0.5.0",
+        "multer": "^1.4.2",
+        "node-schedule": "^1.3.2",
+        "reflect-metadata": "^0.1.13",
+        "routing-controllers": "^0.8.1",
+        "ts-polyfill": "^3.8.2"
+    },
+    "devDependencies": {
+        "@types/jsdom": "^16.2.3",
+        "@types/koa": "^2.11.3",
+        "@types/koa-bodyparser": "^4.3.0",
+        "@types/koa-logger": "^3.1.1",
+        "@types/koa-router": "^7.4.1",
+        "@types/node-schedule": "^1.3.0",
+        "husky": "^4.2.5",
+        "lint-staged": "^10.2.4",
+        "nodemon": "^2.0.4",
+        "prettier": "^2.0.5",
+        "ts-node": "^8.10.1",
+        "typescript": "^3.9.3"
+    },
+    "prettier": {
+        "singleQuote": true,
+        "trailingComma": "none",
+        "arrowParens": "avoid",
+        "tabWidth": 4
+    },
+    "lint-staged": {
+        "*.{md,json,yml,ts}": [
+            "prettier --write"
+        ]
+    },
+    "scripts": {
+        "test": "lint-staged",
+        "dev": "nodemon --inspect --watch source/**/* -e ts --exec node -r ts-node/register source/",
+        "build": "tsc --skipLibCheck",
+        "deploy": "lint-staged  &&  tsc  &&  lean deploy",
+        "start": "node dist/"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm test",
+            "pre-push": "npm run build"
+        }
+    }
+}
