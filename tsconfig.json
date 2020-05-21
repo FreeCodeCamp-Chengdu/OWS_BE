@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "CommonJS",
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "target": "es2017",
-        "sourceMap": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "target": "ES2018",
+        "sourceMap": true,
         "outDir": "dist/",
-        "lib": ["es2015", "es2019.object"]
+        "lib": ["ES2019", "DOM", "DOM.Iterable"]
     },
     "include": ["source/**/*"]
 }

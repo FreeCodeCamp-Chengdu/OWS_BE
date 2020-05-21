@@ -11,6 +11,8 @@
 
 2. [LeanCloud 手机短信验证码登录](source/controller/Session.ts)
 
+3. [中国 IT 活动爬虫](source/controller/Activity.ts)
+
 ## 本地开发
 
 ```shell

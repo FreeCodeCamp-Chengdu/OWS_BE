@@ -1,9 +1,10 @@
 import 'ts-polyfill/lib/es2019-object';
+import { Object as LCObject, Query } from 'leanengine';
 import { JSDOM } from 'jsdom';
-import LC, { Query } from 'leanengine';
 
-const UserTemp = LC.Object.extend('UserTemp'),
-    number_pattern = /[\d\.]+/,
+class UserTemp extends LCObject {}
+
+const number_pattern = /[\d\.]+/,
     ID_pattern = /[\w\-]+/;
 
 interface OrderItem {
@@ -41,10 +42,16 @@ export default class MikeCRM {
 
         const list = Array.from(
             orderList.querySelectorAll('tr'),
-            ({ children }) => ({
-                name: children[0].textContent.trim(),
-                count: +number_pattern.exec(children[1].textContent)[0],
-                price: +number_pattern.exec(children[2].textContent)[0]
+            ({
+                children: [
+                    { textContent: A },
+                    { textContent: B },
+                    { textContent: C }
+                ]
+            }) => ({
+                name: A.trim(),
+                count: +number_pattern.exec(B)[0],
+                price: +number_pattern.exec(C)[0]
             })
         );
 
@@ -70,10 +77,11 @@ export default class MikeCRM {
             window: { document }
         } = new JSDOM(HTML);
 
-        const body = Array.from(
-            document.querySelectorAll('.mk_mailBody > td > table > tbody > tr')
-        );
-
+        const body = [
+            ...document.querySelectorAll(
+                '.mk_mailBody > td > table > tbody > tr'
+            )
+        ];
         const fields = body.slice(-4)[0].querySelectorAll('tbody tr');
 
         if (body.length > 6) var order = this.parseOrder(body[2]);
@@ -85,15 +93,15 @@ export default class MikeCRM {
                 .textContent.trim(),
             order,
             fields: Object.fromEntries(
-                Array.from(fields, ({ children }) => {
-                    const content = children[1].children[0]
-                        ? Array.from(children[1].children, ({ textContent }) =>
+                Array.from(fields, ({ children: [A, B] }) => {
+                    const content = B.children[0]
+                        ? Array.from(B.children, ({ textContent }) =>
                               textContent.trim()
                           ).filter(Boolean)
-                        : children[1].textContent.trim();
+                        : B.textContent.trim();
 
                     return [
-                        children[0].textContent.trim(),
+                        A.textContent.trim(),
                         content.length > 1 ? content : content[0]
                     ];
                 })

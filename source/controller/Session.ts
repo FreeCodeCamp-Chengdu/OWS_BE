@@ -1,4 +1,3 @@
-import { Context } from 'koa';
 import { User, Query } from 'leanengine';
 import { Cloud } from 'leancloud-storage';
 import {
@@ -9,8 +8,10 @@ import {
     Delete,
     Body,
     Ctx,
-    UnauthorizedError
+    Authorized,
+    OnUndefined
 } from 'routing-controllers';
+import { LCContext } from '../utility';
 
 interface SignInToken {
     phone: string;
@@ -18,7 +19,7 @@ interface SignInToken {
 }
 
 @JsonController('/session')
-export default class SessionController {
+export class SessionController {
     @Post('/smsCode')
     sendSMSCode(@Body() { phone }: SignInToken) {
         return Cloud.requestSmsCode(phone);
@@ -26,8 +27,8 @@ export default class SessionController {
 
     @Post('/')
     async signIn(
-        @Body() { phone, code }: SignInToken,
-        @Ctx() context: Context
+        @Ctx() context: LCContext,
+        @Body() { phone, code }: SignInToken
     ) {
         const user = await User.signUpOrlogInWithMobilePhone(phone, code);
 
@@ -49,28 +50,25 @@ export default class SessionController {
     }
 
     @Get('/')
-    getProfile(@Ctx() { currentUser }: Context) {
-        if (!currentUser) throw new UnauthorizedError();
-
+    @Authorized()
+    getProfile(@Ctx() { currentUser }: LCContext) {
         return currentUser.toJSON();
     }
 
     @Patch('/')
-    async editProfile(@Ctx() { currentUser }: Context, @Body() body: any) {
-        if (!currentUser) throw new UnauthorizedError();
-
-        await currentUser.save(body, { user: currentUser });
-
-        return currentUser.toJSON();
+    @Authorized()
+    async editProfile(
+        @Ctx() { currentUser: user }: LCContext,
+        @Body() body: any
+    ) {
+        return (await user.save(body, { user })).toJSON();
     }
 
     @Delete('/')
-    destroy(@Ctx() context: Context) {
-        if (!context.currentUser) throw new UnauthorizedError();
-
+    @Authorized()
+    @OnUndefined(200)
+    destroy(@Ctx() context: LCContext) {
         context.currentUser.logOut();
         context.clearCurrentUser();
-
-        return '';
     }
 }
